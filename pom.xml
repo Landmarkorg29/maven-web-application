@@ -102,7 +102,7 @@
 	    <snapshotRepository>
 	      <id>nexus</id>
 	      <name>Landmark Technologies Snapshot Nexus Repository </name>
-	      <url>http://54.177.117.15:8081/repository/tesla-new-snapshot/</url>
+	      <url>http://54.211.18.147:3000/repository/ebay-sn/</url>
 	    </snapshotRepository>
 	    
 	</distributionManagement>

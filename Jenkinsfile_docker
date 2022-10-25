@@ -1,60 +1,57 @@
+Jenkinsfile:
 pipeline{
-  agent any 
-  tools{
-    maven "maven3.8.4"
-  }
-  stages{
-    stage('GitClone'){
-      steps{
-        echo "cloning the lastest applications version"
-        git "https://github.com/LandmakTechnology/maven-web-application"
-      }
+	agent any
+	tools{
+		maven "maven3.8.6"
+	}
+	stages{
+		stage('GitClone'){
+			steps{
+				git "https://github.com/Landmarkorg29/maven-web-application.git"
+			}
+		}
+		stage('Test&Build'){
+			steps{
+				sh "mvn clean package"
+			}
+		}
+		stage('CodeQuality'){
+			steps{
+				sh "mvn sonar:sonar"
+			}
+		}
+		stage('UploadArtifact'){
+			steps{
+				sh "mvn deploy"
+			}
+		}
+	    stage('predeployment'){
+			steps{
+				sh "docker build -t optimaltech/myapps ."	
+				sh "docker push optimaltech/myapps"	
+			}
+		}
+		stage('message'){
+			steps{
+				sh "echo CI job successful"
+			}
+		}
+stage('Undeployment'){
+			steps{
+				sh "echo Undeploying existing application"
+				sh "docker rm -f optimaltech/myapps"
+			}
+		}
+		stage('deployment'){
+			steps{
+				sh "echo application ready for deployment"
+				sh "docker run --name ebay-app6 -d -p 2900:8080 optimaltech/myapps"
+			}
+		}
+		stage('EmailNotification'){
+			steps{
+				sh "echo deployment successful"
+			}
+		}
+	}
     }
-      stage('Test+Build'){
-      steps{
-        sh "echo Running unitTesting"
-        sh "mvn clean package"
-        echo "echo test successful and backupArtifacts created"
-      }
-    }
-      stage('codeQuality'){
-      steps{
-        sh "echo Running detail code analysis"
-        sh "mvn sonar:sonar"
-        sh  "echo All conditions met/passed"
-      }
-    }
-      stage('upLoadArtifacts'){
-      steps{
-        sh "echo Running detail code analysis"
-        sh "mvn deploy"
-        sh "echo backupArtifacts in nexus"
-      }
-    }
-      stage('predeployment'){
-      steps{
-        sh "echo creating docker image"
-        sh "docker build -t mylandmarktech/maven-web-app . "
-        sh "docker push mylandmarktech/maven-web-app"
-      }
-    }
-    stage('UnDeploy'){
-      steps{
-        sh "echo UNDEPLOYING existing application"
-        sh "docker rm -f webapp"
-      }
-    }
-    stage('deployment'){
-      steps{
-        sh "echo application ready for deployment"
-        sh "docker run -d -p 8000:8080 --name webapp mylandmarktech/maven-web-app"
-      }
-    }
-  stage('emailNotification'){
-    steps{
-      sh "echo deployment successful"
-    }
-  }
-
-  }
-}
